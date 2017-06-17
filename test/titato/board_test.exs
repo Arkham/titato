@@ -92,4 +92,44 @@ defmodule Titato.BoardTest do
 
     assert Board.game_over?(board) == false
   end
+
+  test "it returns the available moves" do
+    e = Board.empty()
+
+    board = %Board{data: [
+      "O", "O",  e ,
+      "X",  e , "0",
+      "O", "O",  e
+    ]}
+
+    assert Board.available_moves(board) == [2, 4, 8]
+  end
+
+  test "it returns the string representation of the board" do
+    board = %Board{}
+
+    assert Board.to_string(board) ==
+      """
+      -------
+       0 1 2
+      -------
+       3 4 5
+      -------
+       6 7 8
+      -------
+      """
+
+    board = Board.update_at(board, 0, "X")
+
+    assert Board.to_string(board) ==
+      """
+      -------
+       X 1 2
+      -------
+       3 4 5
+      -------
+       6 7 8
+      -------
+      """
+  end
 end

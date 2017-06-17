@@ -20,6 +20,13 @@ defmodule Titato.Board do
     data |> Enum.all?(& &1 != @empty)
   end
 
+  def available_moves(%__MODULE__{data: data}) do
+    data
+    |> Enum.with_index
+    |> Enum.reject(fn {value, _index} -> value != @empty end)
+    |> Enum.map(fn {_value, index} -> index end)
+  end
+
   def update_at(%__MODULE__{data: data} = board, index, value) do
     %{board | data: List.update_at(data, index, fn(_) -> value end)}
   end
@@ -52,5 +59,26 @@ defmodule Titato.Board do
 
   def game_over?(board) do
     victory?(board) || full?(board)
+  end
+
+  def to_string(%__MODULE__{data: data}) do
+    v = fn(index) ->
+      case Enum.at(data, index) do
+        @empty -> index
+        value -> value
+      end
+    end
+
+    separator = for _ <- 1..7, do: "-"
+
+    """
+    #{separator}
+     #{v.(0)} #{v.(1)} #{v.(2)}
+    #{separator}
+     #{v.(3)} #{v.(4)} #{v.(5)}
+    #{separator}
+     #{v.(6)} #{v.(7)} #{v.(8)}
+    #{separator}
+    """
   end
 end
