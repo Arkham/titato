@@ -23,21 +23,21 @@ defmodule Titato.Board do
   def available_moves(%__MODULE__{data: data}) do
     data
     |> Enum.with_index
-    |> Enum.filter(fn {value, _index} -> value == @empty end)
-    |> Enum.map(fn {_value, index} -> index end)
+    |> Enum.filter(fn {piece, _index} -> piece == @empty end)
+    |> Enum.map(fn {_piece, index} -> index end)
   end
 
-  def put(%__MODULE__{data: data, pieces: pieces} = board, value, index) when index in 0..8 do
+  def put(%__MODULE__{data: data, pieces: pieces} = board, piece, index) when index in 0..8 do
     with :empty <- Enum.at(data, index),
-         true <- Enum.member?(pieces, value)
+         true <- Enum.member?(pieces, piece)
     do
-      new_data = List.update_at(data, index, fn(_) -> value end)
+      new_data = List.update_at(data, index, fn(_) -> piece end)
       {:ok, %{board | data: new_data}}
     else
       _ -> :error
     end
   end
-  def put(_board, _value, _index), do: :error
+  def put(_board, _piece, _index), do: :error
 
   def winner(%__MODULE__{data: data})  do
     @winning_lines_indexes
@@ -81,7 +81,7 @@ defmodule Titato.Board do
     v = fn(index) ->
       case Enum.at(data, index) do
         @empty -> index
-        value -> value
+        piece -> piece
       end
     end
 

@@ -6,20 +6,20 @@ defmodule Titato.Players.Computer do
   alias Titato.Board
 
   defmodule State do
-    defstruct server: nil, value: nil
+    defstruct server: nil, piece: nil
   end
 
-  def start_link(server, value \\ :O) do
-    GenServer.start_link(__MODULE__, {server, value})
+  def start_link(server, piece \\ :O) do
+    GenServer.start_link(__MODULE__, {server, piece})
   end
 
-  def init({server, value}) do
-    {:ok, %State{server: server, value: value}}
+  def init({server, piece}) do
+    {:ok, %State{server: server, piece: piece}}
   end
 
-  def handle_info({:play, board}, %{server: server, value: value} = state) do
-    position = best_move(board, value)
-    Titato.Server.put(server, value, position)
+  def handle_info({:play, board}, %{server: server, piece: piece} = state) do
+    position = best_move(board, piece)
+    Titato.Server.put(server, piece, position)
     {:noreply, state}
   end
   def handle_info(message, state) do
@@ -27,8 +27,8 @@ defmodule Titato.Players.Computer do
     {:noreply, state}
   end
 
-  def best_move(board, value) do
-    {position, _} = minmax(board, value, value)
+  def best_move(board, piece) do
+    {position, _} = minmax(board, piece, piece)
     position
   end
 

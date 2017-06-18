@@ -16,8 +16,8 @@ defmodule Titato.Server do
     GenServer.call(pid, {:start_game, players, board})
   end
 
-  def put(pid, value, position) do
-    GenServer.call(pid, {:put, value, position})
+  def put(pid, piece, position) do
+    GenServer.call(pid, {:put, piece, position})
   end
 
   # Callbacks
@@ -29,13 +29,13 @@ defmodule Titato.Server do
     notify_player(first, {:play, board})
     {:reply, :ok, %{state | board: board, players: players, current_player: first}}
   end
-  def handle_call({:put, value, position}, {current, _}, %{current_player: current} = state) do
+  def handle_call({:put, piece, position}, {current, _}, %{current_player: current} = state) do
     opponent = toggle_player(current, state.players)
 
-    case Board.put(state.board, value, position) do
+    case Board.put(state.board, piece, position) do
       {:ok, board} ->
         cond do
-          Board.winner(board) == {:ok, value} ->
+          Board.winner(board) == {:ok, piece} ->
             notify_player(current, {:game_over, :victory, board})
             notify_player(opponent, {:game_over, :loss, board})
           Board.tie?(board) ->
