@@ -1,18 +1,5 @@
 defmodule Titato do
-  @moduledoc """
-  Documentation for Titato.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Titato.hello
-      :world
-
-  """
-  def hello do
-    :world
+  def cli_game() do
+    Titato.Cli.start_game()
   end
 end
