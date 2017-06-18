@@ -27,9 +27,16 @@ defmodule Titato.Board do
     |> Enum.map(fn {_value, index} -> index end)
   end
 
-  def update_at(%__MODULE__{data: data} = board, index, value) do
-    %{board | data: List.update_at(data, index, fn(_) -> value end)}
+  def put(%__MODULE__{data: data} = board, value, index) when index in 0..8 do
+    case Enum.at(data, index) do
+      :empty ->
+        new_data = List.update_at(data, index, fn(_) -> value end)
+        {:ok, %{board | data: new_data}}
+
+      _ -> :error
+    end
   end
+  def put(_board, _value, _index), do: :error
 
   def winner(%__MODULE__{data: data})  do
     @winning_lines_indexes

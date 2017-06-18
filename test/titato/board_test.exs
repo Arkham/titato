@@ -8,53 +8,68 @@ defmodule Titato.BoardTest do
   end
 
   test "it allows to fill the board" do
-    board = %Board{} |> Board.update_at(0, "X")
+    {:ok, board} = %Board{} |> Board.put(:X, 0)
     assert Board.empty?(board) == false
   end
 
+  test "it returns error when using it wrong" do
+    board = %Board{}
+    assert Board.put(board, :X, 100) == :error
+  end
+
+  test "it returns error when trying to modify an existing tile" do
+    board = %Board{data: [
+      :O, :O, :X,
+      :X, :O, :O,
+      :X, :X, :X
+    ]}
+
+    assert Board.put(board, :X, 0) == :error
+  end
+
   test "it tells when the board is full" do
-    board = %Board{data: (for _ <- 1..9, do: "X")}
+    board = %Board{data: (for _ <- 1..9, do: :X)}
     assert Board.full?(board) == true
   end
 
   test "it recognizes a horizontal winning position" do
     board = %Board{data: [
-      "O", "O", "X",
-      "X", "O", "O",
-      "X", "X", "X"
+      :O, :O, :X,
+      :X, :O, :O,
+      :X, :X, :X
     ]}
 
-    assert Board.winner(board) == {:ok, "X"}
+    assert Board.winner(board) == {:ok, :X}
     assert Board.victory?(board) == true
   end
 
   test "it recognizes a vertical winning position" do
     board = %Board{data: [
-      "O", "O", "X",
-      "X", "O", "X",
-      "O", "X", "X"
+      :O, :O, :X,
+      :X, :O, :X,
+      :O, :X, :X
     ]}
 
-    assert Board.winner(board) == {:ok, "X"}
+    assert Board.winner(board) == {:ok, :X}
     assert Board.victory?(board) == true
   end
 
   test "it recognizes a diagonal winning position" do
     board = %Board{data: [
-      "O", "O", "X",
-      "X", "X", "0",
-      "X", "O", "X"
+      :O, :O, :X,
+      :X, :X, :O,
+      :X, :O, :X
     ]}
 
-    assert Board.winner(board) == {:ok, "X"}
+    assert Board.winner(board) == {:ok, :X}
     assert Board.victory?(board) == true
   end
 
   test "it recognizes when there is no winner" do
     board = %Board{data: [
-      "O", "O", "X",
-      "X", "X", "0",
-      "O", "O", "X"
+      :O, :O, :X,
+      :X, :X, :O,
+      :O, :O, :X
     ]}
 
     assert Board.winner(board) == :not_found
@@ -63,33 +78,41 @@ defmodule Titato.BoardTest do
 
   test "it recognizes when the board is tied" do
     board = %Board{data: [
-      "O", "O", "X",
-      "X", "X", "0",
-      "O", "O", Board.empty
+      :O, :O, :X,
+      :X, :X, :O,
+      :O, :O, Board.empty
     ]}
-
     assert Board.tie?(board) == false
 
-    board = Board.update_at(board, 8, "X")
-
+    board = %Board{data: [
+      :O, :O, :X,
+      :X, :X, :O,
+      :O, :O, :X
+    ]}
     assert Board.tie?(board) == true
   end
 
   test "it knows when the game is over" do
     board = %Board{data: [
-      "X", "O", "X",
-      "X", "X", "0",
-      "O", "O", "X"
+      :X, :O, :X,
+      :X, :X, :O,
+      :O, :O, :X
     ]}
-
     assert Board.game_over?(board) == true
 
-    board = Board.update_at(board, 0, "O")
-
+    board = %Board{data: [
+      :O, :O, :X,
+      :X, :X, :O,
+      :O, :O, :X
+    ]}
     assert Board.game_over?(board) == true
 
-    board = Board.update_at(board, 0, Board.empty)
-
+    e = Board.empty()
+    board = %Board{data: [
+       e, :O, :X,
+      :X, :X, :O,
+      :O, :O, :X
+    ]}
     assert Board.game_over?(board) == false
   end
 
@@ -97,9 +120,9 @@ defmodule Titato.BoardTest do
     e = Board.empty()
 
     board = %Board{data: [
-      "O", "O",  e ,
-      "X",  e , "0",
-      "O", "O",  e
+      :O, :O,  e,
+      :X,  e, :O,
+      :O, :O,  e
     ]}
 
     assert Board.available_moves(board) == [2, 4, 8]
@@ -119,7 +142,7 @@ defmodule Titato.BoardTest do
       -------
       """
 
-    board = Board.update_at(board, 0, "X")
+    {:ok, board} = Board.put(board, :X, 0)
 
     assert Board.to_string(board) ==
       """
