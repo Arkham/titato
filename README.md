@@ -1,6 +1,6 @@
-# Titato
+# TiTaTo
 
-**TODO: Add description**
+A simple implementation of Tic Tac Toe in Elixir.
 
 ## Installation
 
