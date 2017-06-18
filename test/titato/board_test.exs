@@ -40,6 +40,11 @@ defmodule Titato.BoardTest do
     assert Board.full?(board) == true
   end
 
+  test "it tells an empty board is not winning" do
+    board = %Board{}
+    assert Board.winner(board) == :not_found
+  end
+
   test "it recognizes a horizontal winning position" do
     board = %Board{data: [
       :O, :O, :X,

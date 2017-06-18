@@ -42,13 +42,13 @@ defmodule Titato.Board do
   def winner(%__MODULE__{data: data})  do
     @winning_lines_indexes
     |> Enum.reduce_while(:not_found, fn indexes, _acc ->
-      result =
-        indexes
-        |> Enum.map(&(Enum.at(data, &1)))
-        |> Enum.uniq
+      result = Enum.map(indexes, &(Enum.at(data, &1)))
 
-      case length(result) do
-        1 -> {:halt, {:ok, List.first(result)}}
+      with true <- Enum.all?(result, & &1 != @empty),
+           1 <- length(Enum.uniq(result))
+      do
+        {:halt, {:ok, List.first(result)}}
+      else
         _ -> {:cont, :not_found}
       end
     end)

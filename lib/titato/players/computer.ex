@@ -37,12 +37,12 @@ defmodule Titato.Players.Computer do
       board
       |> Board.available_moves()
       |> Enum.map(fn position ->
-        {:ok, board} = Board.put(board, current_piece, position)
+        {:ok, new_board} = Board.put(board, current_piece, position)
 
-        case Board.game_over?(board) do
-          true -> {position, score(board, original_piece)}
+        case Board.game_over?(new_board) do
+          true -> {position, score(new_board, original_piece)}
           false ->
-            {_, score} = minmax(board, toggle_piece(board, current_piece), original_piece)
+            {_, score} = minmax(new_board, toggle_piece(new_board, current_piece), original_piece)
             {position, score}
         end
       end)
