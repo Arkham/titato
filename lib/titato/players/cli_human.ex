@@ -23,7 +23,7 @@ defmodule Titato.Players.CliHuman do
       {^ref, :move, position} ->
         case Titato.Server.put(server, piece, position) do
           :ok -> :ok
-          :error -> send(self(), {:play, board})
+          :retry -> send(self(), {:play, board})
         end
     end
 
