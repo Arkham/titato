@@ -8,7 +8,7 @@ defmodule Titato.Board do
     [0, 4, 8], [2, 4, 6]             # diagonal
   ]
 
-  defstruct data: @initial
+  defstruct data: @initial, pieces: [:X, :O]
 
   def empty, do: @empty
 
@@ -23,16 +23,17 @@ defmodule Titato.Board do
   def available_moves(%__MODULE__{data: data}) do
     data
     |> Enum.with_index
-    |> Enum.reject(fn {value, _index} -> value != @empty end)
+    |> Enum.filter(fn {value, _index} -> value == @empty end)
     |> Enum.map(fn {_value, index} -> index end)
   end
 
-  def put(%__MODULE__{data: data} = board, value, index) when index in 0..8 do
-    case Enum.at(data, index) do
-      :empty ->
-        new_data = List.update_at(data, index, fn(_) -> value end)
-        {:ok, %{board | data: new_data}}
-
+  def put(%__MODULE__{data: data, pieces: pieces} = board, value, index) when index in 0..8 do
+    with :empty <- Enum.at(data, index),
+         true <- Enum.member?(pieces, value)
+    do
+      new_data = List.update_at(data, index, fn(_) -> value end)
+      {:ok, %{board | data: new_data}}
+    else
       _ -> :error
     end
   end
@@ -66,6 +67,14 @@ defmodule Titato.Board do
 
   def game_over?(board) do
     victory?(board) || full?(board)
+  end
+
+  def toggle_piece(%__MODULE__{pieces: pieces}, piece) do
+    case pieces do
+      [other, ^piece] -> {:ok, other}
+      [^piece, other] -> {:ok, other}
+      _ -> :error
+    end
   end
 
   def to_string(%__MODULE__{data: data}) do

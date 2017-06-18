@@ -27,6 +27,14 @@ defmodule Titato.BoardTest do
     assert Board.put(board, :X, 0) == :error
   end
 
+  test "it returns error when putting an illegal value" do
+    board = %Board{}
+    assert Board.put(board, :hi, 0) == :error
+
+    board = %Board{pieces: [:hi, :ho]}
+    assert Board.put(board, :hi, 0) != :error
+  end
+
   test "it tells when the board is full" do
     board = %Board{data: (for _ <- 1..9, do: :X)}
     assert Board.full?(board) == true
