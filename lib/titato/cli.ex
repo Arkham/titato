@@ -31,8 +31,12 @@ defmodule Titato.Cli do
     end
   end
 
+  defp io_mod() do
+    Application.get_env(:titato, :cli_io) || IO
+  end
+
   defp read_move() do
-    input = IO.gets("Choose your move [0-8]: ")
+    input = io_mod().gets("Choose your move [0-8]: ")
     IO.puts ""
 
     case Integer.parse(input) do
